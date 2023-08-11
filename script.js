@@ -30,7 +30,13 @@ class Particle {
     context.stroke();
   }
   update() {
-    this.angle += 0.5;
+    let x = math.floor(this.x / this.effect.cellSize);
+    let y = Math.floor(this.y / this.effect.cellSize);
+    let index = y * this.effect.cols + x;
+    this.angle = this.effect.flowField[index];
+
+
+
     this.x += this.speedX + Math.sin(this.angle) * 10;
     this.y += this.speedY + Math.cos(this.angle) * 7;
     this.history.push({ x: this.x, y: this.y });
@@ -46,9 +52,24 @@ class Effect {
     this.height = height;
     this.particles = [];
     this.numberOfParticles = 50;
+    this.cellSize = 20;
+    this.rows;
+    this.cols;
+    this.flowField = []
     this.init();
   }
   init() {
+    // create flow field
+    this.rows = Math.floor(this.height / this.cellSize)
+    this.cols = Math.floor(this.width / this.cellSize)
+    this.flowField = []
+    for (let y = 0; y < this.rows; y++) {
+        for (let x = 0; x < this.cols; x++) {
+            let angle = Math.cos(x) + Math.sin(y);
+            this.flowField.push(angle)
+        }
+        console.log(this.flowField)
+    }
     // create particles
     for (let i = 0; i < this.numberOfParticles; i++) {
       this.particles.push(new Particle(this));
