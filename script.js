@@ -1,7 +1,7 @@
 const canvas = document.getElementById("canvas1");
 const ctx = canvas.getContext("2d");
-canvas.width = 500;
-canvas.height = 500;
+canvas.width = 800;
+canvas.height = 800;
 
 // canvas settings
 console.log(ctx);
@@ -50,7 +50,7 @@ class Particle {
       if (this.effect.flowField[index]) {
         this.angle = this.effect.flowField[index].colorAngle;
       }
-      
+
       this.speedX = Math.cos(this.angle);
       this.speedY = Math.sin(this.angle);
       this.x += this.speedX * this.speedModifier;
@@ -82,7 +82,7 @@ class Effect {
     this.height = this.canvas.height;
     this.particles = [];
     this.numberOfParticles = 2000;
-    this.cellSize = 5;
+    this.cellSize = 2;
     this.rows;
     this.cols;
     this.flowField = [];
@@ -103,8 +103,34 @@ class Effect {
     this.context.font = "450px Impact";
     this.context.textAlign = "center";
     this.context.textBaseline = "middle";
-    this.context.fillStyle = "red"
-    this.context.fillText("JS", this.width * 0.5, this.height * 0.5);
+
+    const gradient1 = this.context.createLinearGradient(
+      0,
+      0,
+      this.width,
+      this.height
+    );
+    gradient1.addColorStop(0.2, "rgb(255, 0, 0)");
+    gradient1.addColorStop(0.4, "rgb(0, 255, 0)");
+    gradient1.addColorStop(0.6, "rgb(150, 100, 100)");
+    gradient1.addColorStop(0.8, "rgb(0, 255, 255)");
+
+    const gradient2 = this.context.createRadialGradient(
+      this.width * 0.5, 
+      this.height * 0.5, 
+      10, 
+      this.width * 0.5,
+      this.height * 0.5,
+      this.width
+    );
+    gradient2.addColorStop(0.2, "rgb(0, 0, 255)");
+    gradient2.addColorStop(0.4, "rgb(200, 255, 0)");
+    gradient2.addColorStop(0.6, "rgb(0, 0, 255)");
+    gradient2.addColorStop(0.8, "rgb(0, 0, 0)");
+
+
+    this.context.fillStyle = gradient2;
+    this.context.fillText("Luky", this.width * 0.5, this.height * 0.5, this.width * 0.8);
   }
   init() {
     // create flow field
@@ -116,8 +142,13 @@ class Effect {
     this.drawText();
 
     // scan pixel data
-    const pixels = this.context.getImageData(0, 0, this.width, this.height).data;
-    console.log(pixels)
+    const pixels = this.context.getImageData(
+      0,
+      0,
+      this.width,
+      this.height
+    ).data;
+    console.log(pixels);
     for (let y = 0; y < this.height; y += this.cellSize) {
       for (let x = 0; x < this.width; x += this.cellSize) {
         const index = (y * this.width + x) * 4;
@@ -126,13 +157,12 @@ class Effect {
         const blue = pixels[index + 2];
         const alpha = pixels[index + 3];
         const grayscale = (red + green + blue) / 3;
-        const colorAngle = ((grayscale/255) * 6.28).toFixed(2);
+        const colorAngle = ((grayscale / 255) * 6.28).toFixed(2);
         this.flowField.push({
           x: x,
           y: y,
-          colorAngle: colorAngle
-        })
-        
+          colorAngle: colorAngle,
+        });
       }
     }
 
