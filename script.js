@@ -114,7 +114,7 @@ class Effect {
     this.flowField = [];
     // this.curve = 10;
     // this.zoom = 0.1;
-    this.debug = true;
+    this.debug = false;
     this.init();
 
     window.addEventListener("keydown", (e) => {
@@ -136,10 +136,10 @@ class Effect {
       this.width,
       this.height
     );
-    gradient1.addColorStop(0.2, "rgb(150, 100, 100)");
-    gradient1.addColorStop(0.4, "rgb(0, 255, 0)");
-    gradient1.addColorStop(0.6, "rgb(250, 0, 0)");
-    gradient1.addColorStop(0.8, "rgb(250, 150, 100)");
+    gradient1.addColorStop(0.2, "rgb(2550, 250, 0)");
+    gradient1.addColorStop(0.4, "rgb(200, 5, 50)");
+    gradient1.addColorStop(0.6, "rgb(150, 255, 255)");
+    gradient1.addColorStop(0.8, "rgb(255, 255, 150)");
 
     const gradient2 = this.context.createRadialGradient(
       this.width * 0.5,
@@ -159,7 +159,7 @@ class Effect {
       "Luke",
       this.width * 0.5,
       this.height * 0.5,
-      this.width * 0.8
+      this.width 
     );
   }
   init() {
@@ -209,6 +209,9 @@ class Effect {
     for (let i = 0; i < this.numberOfParticles; i++) {
       this.particles.push(new Particle(this));
     }
+    this.particles.forEach((particle) => {
+      particle.reset()
+    })
   }
   drawGrid() {
     this.context.save();
