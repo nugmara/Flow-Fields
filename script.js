@@ -21,6 +21,8 @@ class Particle {
     this.maxLength = Math.floor(Math.random() * 200 + 10);
     this.angle = 0;
     this.timer = this.maxLength * 2;
+    this.colors = ["#ffd9f5", "#fcb8ea", "#fc8bde", "#fa43ca", "#fa11bc", "#bf068e"];
+    this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
   }
   draw(context) {
     context.beginPath();
@@ -28,6 +30,7 @@ class Particle {
     for (let i = 0; i < this.history.length; i++) {
       context.lineTo(this.history[i].x, this.history[i].y);
     }
+    context.strokeStyle = this.color;
     context.stroke();
   }
   update() {
@@ -72,7 +75,7 @@ class Effect {
     this.cols;
     this.flowField = [];
     this.curve = 6;
-    this.zoom = 0.5;
+    this.zoom = 0.01;
     this.debug = true;
     this.init();
 
