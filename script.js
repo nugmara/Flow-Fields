@@ -21,7 +21,14 @@ class Particle {
     this.maxLength = Math.floor(Math.random() * 200 + 10);
     this.angle = 0;
     this.timer = this.maxLength * 2;
-    this.colors = ["#ffd9f5", "#fcb8ea", "#fc8bde", "#fa43ca", "#fa11bc", "#bf068e"];
+    this.colors = [
+      "#ffd9f5",
+      "#fcb8ea",
+      "#fc8bde",
+      "#fa43ca",
+      "#fa11bc",
+      "#bf068e",
+    ];
     this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
   }
   draw(context) {
@@ -65,8 +72,9 @@ class Particle {
 }
 
 class Effect {
-  constructor(canvas) {
+  constructor(canvas, ctx) {
     this.canvas = canvas;
+    this.context = ctx;
     this.width = this.canvas.width;
     this.height = this.canvas.height;
     this.particles = [];
@@ -75,24 +83,33 @@ class Effect {
     this.rows30;
     this.cols;
     this.flowField = [];
-    this.curve = 2;
-    this.zoom = 0.2;
-    this.debug = false;
+    this.curve = 5;
+    this.zoom = 0.05;
+    this.debug = true;
     this.init();
 
-    window.addEventListener("keydown", e => {
+    window.addEventListener("keydown", (e) => {
       if (e.key === "d") this.debug = !this.debug;
-    })
+    });
 
-    window.addEventListener("resize", e => {
-      this.resize(e.target.innerWidth, e.target.innerHeight)
-    })
+    window.addEventListener("resize", (e) => {
+      this.resize(e.target.innerWidth, e.target.innerHeight);
+    });
+  }
+  drawText() {
+    this.context.font = "500px Impact";
+    this.context.textAlign = "center";
+    this.context.textBaseline = "middle";
+    this.context.fillText("JS", this.width * 0.5, this.height * 0.5);
   }
   init() {
     // create flow field
     this.rows = Math.floor(this.height / this.cellSize);
     this.cols = Math.floor(this.width / this.cellSize);
     this.flowField = [];
+
+    //draw text
+
     for (let y = 0; y < this.rows; y++) {
       for (let x = 0; x < this.cols; x++) {
         let angle =
@@ -101,49 +118,53 @@ class Effect {
       }
     }
     // create particles
-    this.particles = []
+    this.particles = [];
     for (let i = 0; i < this.numberOfParticles; i++) {
       this.particles.push(new Particle(this));
     }
   }
-  drawGrid(context) {
-    context.save();
-    context.strokeStyle = "white";
-    context.lineWidth = 0.3
+  drawGrid() {
+    this.context.save();
+    this.context.strokeStyle = "white";
+    this.context.lineWidth = 0.3;
     for (let c = 0; c < this.cols; c++) {
-      context.beginPath();
-      context.moveTo(this.cellSize * c, 0);
-      context.lineTo(this.cellSize * c, this.height);
-      context.stroke();
+      this.context.beginPath();
+      this.context.moveTo(this.cellSize * c, 0);
+      this.context.lineTo(this.cellSize * c, this.height);
+      this.context.stroke();
     }
     for (let r = 0; r < this.rows; r++) {
-      context.beginPath();
-      context.moveTo(0, this.cellSize * r);
-      context.lineTo(this.width, this.cellSize * r);
-      context.stroke();
+      this.context.beginPath();
+      this.context.moveTo(0, this.cellSize * r);
+      this.context.lineTo(this.width, this.cellSize * r);
+      this.context.stroke();
     }
-    context.restore();
+    this.context.restore();
   }
   resize(width, height) {
     this.canvas.width = width;
     this.canvas.height = height;
     this.width = this.canvas.width;
     this.height = this.canvas.height;
+    this.init();
   }
-  render(context) {
-    if (this.debug) this.drawGrid(context);
+  render() {
+    if (this.debug) {
+      this.drawGrid();
+      this.drawText();
+    }
     this.particles.forEach((particle) => {
-      particle.draw(context);
+      particle.draw(this.context);
       particle.update();
     });
   }
 }
 
-const effect = new Effect(canvas);
+const effect = new Effect(canvas, ctx);
 
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  effect.render(ctx);
+  effect.render();
   requestAnimationFrame(animate);
 }
 animate();
