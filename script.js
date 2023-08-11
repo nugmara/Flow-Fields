@@ -65,22 +65,27 @@ class Particle {
 }
 
 class Effect {
-  constructor(width, height) {
-    this.width = width;
-    this.height = height;
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.width = this.canvas.width;
+    this.height = this.canvas.height;
     this.particles = [];
     this.numberOfParticles = 2000;
-    this.cellSize = 20;
+    this.cellSize = 30;
     this.rows30;
     this.cols;
     this.flowField = [];
-    this.curve = 6;
-    this.zoom = 0.01;
-    this.debug = true;
+    this.curve = 2;
+    this.zoom = 0.2;
+    this.debug = false;
     this.init();
 
     window.addEventListener("keydown", e => {
       if (e.key === "d") this.debug = !this.debug;
+    })
+
+    window.addEventListener("resize", e => {
+      this.resize(e.target.innerWidth, e.target.innerHeight)
     })
   }
   init() {
@@ -94,9 +99,9 @@ class Effect {
           (Math.cos(x * this.zoom) + Math.sin(y * this.zoom)) * this.curve;
         this.flowField.push(angle);
       }
-      console.log(this.flowField);
     }
     // create particles
+    this.particles = []
     for (let i = 0; i < this.numberOfParticles; i++) {
       this.particles.push(new Particle(this));
     }
@@ -119,6 +124,12 @@ class Effect {
     }
     context.restore();
   }
+  resize(width, height) {
+    this.canvas.width = width;
+    this.canvas.height = height;
+    this.width = this.canvas.width;
+    this.height = this.canvas.height;
+  }
   render(context) {
     if (this.debug) this.drawGrid(context);
     this.particles.forEach((particle) => {
@@ -128,8 +139,7 @@ class Effect {
   }
 }
 
-const effect = new Effect(canvas.width, canvas.height);
-console.log(effect);
+const effect = new Effect(canvas);
 
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
