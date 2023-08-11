@@ -16,18 +16,21 @@ class Particle {
     this.y = Math.floor(Math.random() * this.effect.height);
     this.speedX;
     this.speedY;
-    this.speedModifier = Math.floor(Math.random() * 5 + 1);
+    this.speedModifier = Math.floor(Math.random() * 2 + 1);
     this.history = [{ x: this.x, y: this.y }];
-    this.maxLength = Math.floor(Math.random() * 200 + 10);
+    this.maxLength = Math.floor(Math.random() * 60 + 10);
     this.angle = 0;
+    this.newAngle = 0;
+    this.angleCorrector = Math.random() * 0.5 + 0.05;
     this.timer = this.maxLength * 2;
     this.colors = [
-      "#ffd9f5",
-      "#fcb8ea",
-      "#fc8bde",
-      "#fa43ca",
-      "#fa11bc",
-      "#bf068e",
+      "#fcf3c0",
+      "#fced9d",
+      "#fce774",
+      "#ffe34a",
+      "#ffdd29",
+      "#ffd700",
+      "white"
     ];
     this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
   }
@@ -48,7 +51,14 @@ class Particle {
       let index = y * this.effect.cols + x;
 
       if (this.effect.flowField[index]) {
-        this.angle = this.effect.flowField[index].colorAngle;
+        this.newAngle = this.effect.flowField[index].colorAngle;
+        if (this.angle > this.newAngle) {
+          this.angle -= this.angleCorrector;
+        } else if (this.angle < this.newAngle) {
+          this.angle += this.angleCorrector;
+        } else {
+          this.angle = this.newAngle;
+        }
       }
 
       this.speedX = Math.cos(this.angle);
@@ -67,10 +77,26 @@ class Particle {
     }
   }
   reset() {
-    this.x = Math.floor(Math.random() * this.effect.width);
-    this.y = Math.floor(Math.random() * this.effect.height);
-    this.history = [{ x: this.x, y: this.y }];
-    this.timer = this.maxLength * 2;
+    let attempts = 0;
+    let resetSuccess = false;
+
+    while (attempts < 20 && !resetSuccess) {
+      attempts++
+      let testIndex = Math.floor(Math.random() * this.effect.flowField.length);
+      if (this.effect.flowField[testIndex].alpha > 0) {
+        this.x = this.effect.flowField[testIndex].x;
+        this.y = this.effect.flowField[testIndex].y
+        this.history = [{ x: this.x, y: this.y }];
+        this.timer = this.maxLength * 2;
+        resetSuccess = true;
+      }
+    }
+    if (!resetSuccess) {
+      this.x = Math.random() * this.effect.width;
+      this.y = Math.random() * this.effect.height;
+      this.history = [{ x: this.x, y: this.y }];
+      this.timer = this.maxLength * 2;
+    }
   }
 }
 
@@ -81,13 +107,13 @@ class Effect {
     this.width = this.canvas.width;
     this.height = this.canvas.height;
     this.particles = [];
-    this.numberOfParticles = 2000;
-    this.cellSize = 2;
+    this.numberOfParticles = 4000;
+    this.cellSize = 5;
     this.rows;
     this.cols;
     this.flowField = [];
-    this.curve = 10;
-    this.zoom = 0.1;
+    // this.curve = 10;
+    // this.zoom = 0.1;
     this.debug = true;
     this.init();
 
@@ -110,27 +136,31 @@ class Effect {
       this.width,
       this.height
     );
-    gradient1.addColorStop(0.2, "rgb(255, 0, 0)");
+    gradient1.addColorStop(0.2, "rgb(150, 100, 100)");
     gradient1.addColorStop(0.4, "rgb(0, 255, 0)");
-    gradient1.addColorStop(0.6, "rgb(150, 100, 100)");
-    gradient1.addColorStop(0.8, "rgb(0, 255, 255)");
+    gradient1.addColorStop(0.6, "rgb(250, 0, 0)");
+    gradient1.addColorStop(0.8, "rgb(250, 150, 100)");
 
     const gradient2 = this.context.createRadialGradient(
-      this.width * 0.5, 
-      this.height * 0.5, 
-      10, 
+      this.width * 0.5,
+      this.height * 0.5,
+      10,
       this.width * 0.5,
       this.height * 0.5,
       this.width
     );
-    gradient2.addColorStop(0.2, "rgb(0, 0, 255)");
+    gradient2.addColorStop(0.2, "rgb(0, 0, 250)");
     gradient2.addColorStop(0.4, "rgb(200, 255, 0)");
-    gradient2.addColorStop(0.6, "rgb(0, 0, 255)");
+    gradient2.addColorStop(0.6, "rgb(0, 0, 250)");
     gradient2.addColorStop(0.8, "rgb(0, 0, 0)");
 
-
     this.context.fillStyle = gradient2;
-    this.context.fillText("Luky", this.width * 0.5, this.height * 0.5, this.width * 0.8);
+    this.context.fillText(
+      "Luke",
+      this.width * 0.5,
+      this.height * 0.5,
+      this.width * 0.8
+    );
   }
   init() {
     // create flow field
@@ -161,6 +191,7 @@ class Effect {
         this.flowField.push({
           x: x,
           y: y,
+          alpha: alpha,
           colorAngle: colorAngle,
         });
       }
