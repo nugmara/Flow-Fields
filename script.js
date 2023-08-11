@@ -1,7 +1,7 @@
 const canvas = document.getElementById("canvas1");
 const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = 500;
+canvas.height = 500;
 
 // canvas settings
 console.log(ctx);
@@ -46,8 +46,11 @@ class Particle {
       let x = Math.floor(this.x / this.effect.cellSize);
       let y = Math.floor(this.y / this.effect.cellSize);
       let index = y * this.effect.cols + x;
-      this.angle = this.effect.flowField[index];
 
+      if (this.effect.flowField[index]) {
+        this.angle = this.effect.flowField[index].colorAngle;
+      }
+      
       this.speedX = Math.cos(this.angle);
       this.speedY = Math.sin(this.angle);
       this.x += this.speedX * this.speedModifier;
@@ -79,12 +82,12 @@ class Effect {
     this.height = this.canvas.height;
     this.particles = [];
     this.numberOfParticles = 2000;
-    this.cellSize = 30;
-    this.rows30;
+    this.cellSize = 5;
+    this.rows;
     this.cols;
     this.flowField = [];
-    this.curve = 5;
-    this.zoom = 0.05;
+    this.curve = 10;
+    this.zoom = 0.1;
     this.debug = true;
     this.init();
 
@@ -93,13 +96,14 @@ class Effect {
     });
 
     window.addEventListener("resize", (e) => {
-      this.resize(e.target.innerWidth, e.target.innerHeight);
+      // this.resize(e.target.innerWidth, e.target.innerHeight);
     });
   }
   drawText() {
-    this.context.font = "500px Impact";
+    this.context.font = "450px Impact";
     this.context.textAlign = "center";
     this.context.textBaseline = "middle";
+    this.context.fillStyle = "red"
     this.context.fillText("JS", this.width * 0.5, this.height * 0.5);
   }
   init() {
@@ -109,14 +113,36 @@ class Effect {
     this.flowField = [];
 
     //draw text
+    this.drawText();
 
-    for (let y = 0; y < this.rows; y++) {
-      for (let x = 0; x < this.cols; x++) {
-        let angle =
-          (Math.cos(x * this.zoom) + Math.sin(y * this.zoom)) * this.curve;
-        this.flowField.push(angle);
+    // scan pixel data
+    const pixels = this.context.getImageData(0, 0, this.width, this.height).data;
+    console.log(pixels)
+    for (let y = 0; y < this.height; y += this.cellSize) {
+      for (let x = 0; x < this.width; x += this.cellSize) {
+        const index = (y * this.width + x) * 4;
+        const red = pixels[index];
+        const green = pixels[index + 1];
+        const blue = pixels[index + 2];
+        const alpha = pixels[index + 3];
+        const grayscale = (red + green + blue) / 3;
+        const colorAngle = ((grayscale/255) * 6.28).toFixed(2);
+        this.flowField.push({
+          x: x,
+          y: y,
+          colorAngle: colorAngle
+        })
+        
       }
     }
+
+    // for (let y = 0; y < this.rows; y++) {
+    //   for (let x = 0; x < this.cols; x++) {
+    //     let angle =
+    //       (Math.cos(x * this.zoom) + Math.sin(y * this.zoom)) * this.curve;
+    //     this.flowField.push(angle);
+    //   }
+    // }
     // create particles
     this.particles = [];
     for (let i = 0; i < this.numberOfParticles; i++) {
