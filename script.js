@@ -24,14 +24,34 @@ class Particle {
     this.angleCorrector = Math.random() * 0.5 + 0.05;
     this.timer = this.maxLength * 2;
     this.colors = [
-      "#fcf3c0",
-      "#fced9d",
-      "#fce774",
-      "#ffe34a",
-      "#ffdd29",
-      "#ffd700",
-      "white"
-    ];
+      "#9400D3",
+      "#4B0082",
+      "#0000FF",
+      "#00FF00",
+      "#FFFF00",
+      "#FF7F00",
+      "#FF0000"
+    ]
+    // this.colors = [
+    //   "#E8CACA",
+    //   "#FFE5A8",
+    //   "#F8FF97",
+    //   "#BCFFA4",
+    //   "#A6FFD3",
+    //   "#B9E3FF",
+    //   "#C1CCFF",
+    //   "#E4CFFF",
+    //   "#F1CEF4"
+    // ]
+    // this.colors = [
+    //   "#fcf3c0",
+    //   "#fced9d",
+    //   "#fce774",
+    //   "#ffe34a",
+    //   "#ffdd29",
+    //   "#ffd700",
+    //   "white"
+    // ];
     this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
   }
   draw(context) {
@@ -107,13 +127,14 @@ class Effect {
     this.width = this.canvas.width;
     this.height = this.canvas.height;
     this.particles = [];
-    this.numberOfParticles = 4000;
+    this.numberOfParticles = 1000;
     this.cellSize = 5;
     this.rows;
     this.cols;
     this.flowField = [];
     // this.curve = 10;
     // this.zoom = 0.1;
+    this.image = document.getElementById("candy-person");
     this.debug = false;
     this.init();
 
@@ -162,6 +183,11 @@ class Effect {
       this.width 
     );
   }
+  drawFlowFieldImage() {
+    let imageSize = this.width * 0.5;
+    let heightImage = this.height * 0.7;
+    this.context.drawImage(this.image, this.width * 0.5 - imageSize * 0.5, this.height * 0.5 - imageSize * 0.7, imageSize, heightImage)
+  }
   init() {
     // create flow field
     this.rows = Math.floor(this.height / this.cellSize);
@@ -169,7 +195,10 @@ class Effect {
     this.flowField = [];
 
     //draw text
-    this.drawText();
+    // this.drawText();
+
+    // draw image
+    this.drawFlowFieldImage()
 
     // scan pixel data
     const pixels = this.context.getImageData(
@@ -241,7 +270,8 @@ class Effect {
   render() {
     if (this.debug) {
       this.drawGrid();
-      this.drawText();
+      // this.drawText();
+      this.drawFlowFieldImage()
     }
     this.particles.forEach((particle) => {
       particle.draw(this.context);
