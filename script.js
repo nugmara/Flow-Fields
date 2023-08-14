@@ -32,17 +32,17 @@ class Particle {
     //   "#FF7F00",
     //   "#FF0000"
     // ]
-    // this.colors = [
-    //   "#E8CACA",
-    //   "#FFE5A8",
-    //   "#F8FF97",
-    //   "#BCFFA4",
-    //   "#A6FFD3",
-    //   "#B9E3FF",
-    //   "#C1CCFF",
-    //   "#E4CFFF",
-    //   "#F1CEF4"
-    // ]
+     this.colors = [
+       "#E8CACA",
+       "#FFE5A8",
+      "#F8FF97",
+       "#BCFFA4",
+       "#A6FFD3",
+       "#B9E3FF",
+       "#C1CCFF",
+       "#E4CFFF",
+       "#F1CEF4"
+     ]
     // this.colors = [
     //   "#fcf3c0",
     //   "#fced9d",
@@ -53,11 +53,11 @@ class Particle {
     //   "white"
     // ];
 
-    this.red = 0;;
-    this.green = 0;
-    this.blue = 0;
-    this.color = "rgb(" + this.red + "," + this.green + "," + this.blue + ")"
-    // this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+    // this.red = 0;;
+    // this.green = 0;
+    // this.blue = 0;
+    // this.color = "rgb(" + this.red + "," + this.green + "," + this.blue + ")"
+     this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
 
   }
   draw(context) {
@@ -77,11 +77,11 @@ class Particle {
       let index = y * this.effect.cols + x;
 
       let flowFieldIndex = this.effect.flowField[index];
-      // if (this.effect.flowField[index]) {
-      //   this.newAngle = this.effect.flowField[index].colorAngle;
+       if (this.effect.flowField[index]) {
+         this.newAngle = this.effect.flowField[index].colorAngle;
       // motion
-      if (flowFieldIndex) {
-        this.newAngle = flowFieldIndex.colorAngle;
+      // if (flowFieldIndex) {
+      //   this.newAngle = flowFieldIndex.colorAngle;
         if (this.angle > this.newAngle) {
           this.angle -= this.angleCorrector;
         } else if (this.angle < this.newAngle) {
@@ -90,12 +90,12 @@ class Particle {
           this.angle = this.newAngle;
         }
         // color
-        if (flowFieldIndex.alpha > 0) {
-          this.red === flowFieldIndex.red ? this.red : this.red += (flowFieldIndex.red - this.red) * 0.1;
-          this.green === flowFieldIndex.green ? this.green : this.green += (flowFieldIndex.green - this.green) * 0.1;
-          this.blue === flowFieldIndex.blue ? this.blue : this.blue += (flowFieldIndex.blue - this.blue) * 0.1;
-          this.color = "rgb(" + this.red + "," + this.green + "," + this.blue + ")";
-        }
+        // if (flowFieldIndex.alpha > 0) {
+        //   this.red === flowFieldIndex.red ? this.red : this.red += (flowFieldIndex.red - this.red) * 0.1;
+        //   this.green === flowFieldIndex.green ? this.green : this.green += (flowFieldIndex.green - this.green) * 0.1;
+        //   this.blue === flowFieldIndex.blue ? this.blue : this.blue += (flowFieldIndex.blue - this.blue) * 0.1;
+        //   this.color = "rgb(" + this.red + "," + this.green + "," + this.blue + ")";
+        // }
       }
 
       this.speedX = Math.cos(this.angle);
@@ -144,7 +144,7 @@ class Effect {
     this.width = this.canvas.width;
     this.height = this.canvas.height;
     this.particles = [];
-    this.numberOfParticles = 1000;
+    this.numberOfParticles = 4000;
     this.cellSize = 5;
     this.rows;
     this.cols;
@@ -212,10 +212,10 @@ class Effect {
     this.flowField = [];
 
     //draw text
-    // this.drawText();
+     this.drawText();
 
     // draw image
-    this.drawFlowFieldImage()
+    // this.drawFlowFieldImage()
 
     // scan pixel data
     const pixels = this.context.getImageData(
@@ -237,9 +237,9 @@ class Effect {
         this.flowField.push({
           x: x,
           y: y,
-          red: red,
-          green: green,
-          blue: blue,
+          // red: red,
+          // green: green,
+          // blue: blue,
           alpha: alpha,
           colorAngle: colorAngle,
         });
@@ -290,8 +290,8 @@ class Effect {
   render() {
     if (this.debug) {
       this.drawGrid();
-      // this.drawText();
-      this.drawFlowFieldImage()
+       this.drawText();
+      // this.drawFlowFieldImage()
     }
     this.particles.forEach((particle) => {
       particle.draw(this.context);
