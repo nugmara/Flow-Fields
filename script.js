@@ -23,15 +23,15 @@ class Particle {
     this.newAngle = 0;
     this.angleCorrector = Math.random() * 0.5 + 0.05;
     this.timer = this.maxLength * 2;
-    this.colors = [
-      "#9400D3",
-      "#4B0082",
-      "#0000FF",
-      "#00FF00",
-      "#FFFF00",
-      "#FF7F00",
-      "#FF0000"
-    ]
+    // this.colors = [
+    //   "#9400D3",
+    //   "#4B0082",
+    //   "#0000FF",
+    //   "#00FF00",
+    //   "#FFFF00",
+    //   "#FF7F00",
+    //   "#FF0000"
+    // ]
     // this.colors = [
     //   "#E8CACA",
     //   "#FFE5A8",
@@ -52,7 +52,13 @@ class Particle {
     //   "#ffd700",
     //   "white"
     // ];
-    this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+
+    this.red = 0;;
+    this.green = 0;
+    this.blue = 0;
+    this.color = "rgb(" + this.red + "," + this.green + "," + this.blue + ")"
+    // this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+
   }
   draw(context) {
     context.beginPath();
@@ -70,14 +76,25 @@ class Particle {
       let y = Math.floor(this.y / this.effect.cellSize);
       let index = y * this.effect.cols + x;
 
-      if (this.effect.flowField[index]) {
-        this.newAngle = this.effect.flowField[index].colorAngle;
+      let flowFieldIndex = this.effect.flowField[index];
+      // if (this.effect.flowField[index]) {
+      //   this.newAngle = this.effect.flowField[index].colorAngle;
+      // motion
+      if (flowFieldIndex) {
+        this.newAngle = flowFieldIndex.colorAngle;
         if (this.angle > this.newAngle) {
           this.angle -= this.angleCorrector;
         } else if (this.angle < this.newAngle) {
           this.angle += this.angleCorrector;
         } else {
           this.angle = this.newAngle;
+        }
+        // color
+        if (flowFieldIndex.alpha > 0) {
+          this.red === flowFieldIndex.red ? this.red : this.red += (flowFieldIndex.red - this.red) * 0.1;
+          this.green === flowFieldIndex.green ? this.green : this.green += (flowFieldIndex.green - this.green) * 0.1;
+          this.blue === flowFieldIndex.blue ? this.blue : this.blue += (flowFieldIndex.blue - this.blue) * 0.1;
+          this.color = "rgb(" + this.red + "," + this.green + "," + this.blue + ")";
         }
       }
 
@@ -100,7 +117,7 @@ class Particle {
     let attempts = 0;
     let resetSuccess = false;
 
-    while (attempts < 20 && !resetSuccess) {
+    while (attempts < 40 && !resetSuccess) {
       attempts++
       let testIndex = Math.floor(Math.random() * this.effect.flowField.length);
       if (this.effect.flowField[testIndex].alpha > 0) {
@@ -185,7 +202,7 @@ class Effect {
   }
   drawFlowFieldImage() {
     let imageSize = this.width * 0.5;
-    let heightImage = this.height * 0.7;
+    let heightImage = this.height * 0.65;
     this.context.drawImage(this.image, this.width * 0.5 - imageSize * 0.5, this.height * 0.5 - imageSize * 0.7, imageSize, heightImage)
   }
   init() {
@@ -220,6 +237,9 @@ class Effect {
         this.flowField.push({
           x: x,
           y: y,
+          red: red,
+          green: green,
+          blue: blue,
           alpha: alpha,
           colorAngle: colorAngle,
         });
