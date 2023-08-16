@@ -2,6 +2,7 @@
 
 <div align="center">
     <img src="./images/flow-field.gif" width="600">
+    <img src="./images/flow-field-image.gif" width="500"/>
 </div>
 
 This project showcases a captivating particle animation created using HTML5 Canvas. The animation features particles that move in response to a generated flow field, resulting in an entrancing visual experience.
