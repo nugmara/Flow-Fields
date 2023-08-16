@@ -1,6 +1,6 @@
 # Flow Field Particle Animation
 
-<div float="left">
+<div float="center">
     <img src="./images/flow-field.gif" width="300">
     <img src="./images/flow-field-image.gif" width="300"/>
 </div>
